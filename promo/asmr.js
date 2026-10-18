@@ -88,7 +88,7 @@ composer.setSize(W, H);
 composer.addPass(new RenderPass(scene, camera));
 const bokeh = new BokehPass(scene, camera, { focus: 2, aperture: 0.01, maxblur: 0.009 });
 composer.addPass(bokeh);
-const bloom = new UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), 0, 0.7, 0.85);
+const bloom = new UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), 0, 0.5, 0.92);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -199,20 +199,20 @@ let wideDist = 6;
 
 // each shot: camera target (local point), distance, azimuth, elevation, wheel yaw, aperture
 const SHOTS = [
-  { to: 2.6, label: () => '01 wedge', cam: (u) => ({ p: [0, 0.38, 0], d: wideDist * lerp(1.0, 0.9, u), az: lerp(-0.28, -0.12, u), el: 0.1, yaw: -0.2, ap: 0.006 }) },
-  { to: 3.9, label: () => '02 press', cam: (u) => ({ p: pt(PRESS.li, PRESS.x, PRESS.y), d: lerp(0.85, 0.72, u), az: lerp(-0.2, -0.08, u), el: 0.16, yaw: 0, ap: 0.03 }) },
-  { to: 5.2, label: () => '03 carve', cam: (u) => ({ p: pt(CARVE.li, 0, lerp(0.62, 0.22, ease(u))), d: 0.85, az: 0.32, el: 0.1, yaw: 0, ap: 0.03 }) },
-  { to: 6.2, label: () => '04 add', cam: (u) => ({ p: pt(ADD.li, ADD.x, ADD.y), d: lerp(0.95, 0.8, u), az: lerp(0.35, 0.22, u), el: 0.26, yaw: 0, ap: 0.03 }) },
-  { to: 7.6, label: () => `05 dry · ${look.water.toFixed(1)}% water`, cam: (u) => ({ p: center(), d: wideDist * 1.02, az: 0, el: 0.24, yaw: lerp(-0.7, 0.45, sm(u)), ap: 0.006 }) },
-  { to: 10.0, label: () => `06 bisque · ${Math.round(look.T)}°c`, cam: (u) => ({ p: pt(2, 0, 0.3), d: lerp(1.25, 0.9, u), az: -0.22, el: 0.1, yaw: -0.05, ap: 0.025 }) },
-  { to: 11.6, label: () => '07 dip · celadon', cam: (u) => ({ p: center(), d: wideDist * 0.92, az: lerp(0.7, 0.6, u), el: 0.12, yaw: 0, ap: 0.01 }) },
-  { to: 13.8, label: () => `08 glaze fire · ${Math.round(look.T).toLocaleString('en-US')}°c`, cam: (u) => ({ p: pt(1, 0.02, lerp(0.22, 0.12, u)), d: lerp(0.8, 0.66, u), az: -0.12, el: 0.06, yaw: 0, ap: 0.03 }) },
-  { to: 16.0, label: () => '09 cone 6', cam: (u) => ({ p: center(), d: wideDist * lerp(0.86, 0.8, u), az: lerp(-0.45, 0.25, sm(u)), el: 0.18, yaw: 0, ap: 0.012 }) },
+  { to: 2.6, label: () => '01 wedge', cam: (u) => ({ p: [0, 0.38, 0], d: wideDist * lerp(0.95, 0.86, u), az: lerp(-0.28, -0.12, u), el: 0.1, yaw: -0.2, ap: 0.006 }) },
+  { to: 3.9, label: () => '02 press', cam: (u) => ({ p: pt(PRESS.li, PRESS.x, PRESS.y), d: lerp(4.2, 3.6, u), az: lerp(-0.2, -0.08, u), el: 0.16, yaw: 0, ap: 0.016 }) },
+  { to: 5.2, label: () => '03 carve', cam: (u) => ({ p: pt(CARVE.li, 0, lerp(0.62, 0.22, ease(u))), d: 3.9, az: 0.32, el: 0.1, yaw: 0, ap: 0.016 }) },
+  { to: 6.2, label: () => '04 add', cam: (u) => ({ p: pt(ADD.li, ADD.x, ADD.y), d: lerp(4.2, 3.7, u), az: lerp(0.35, 0.22, u), el: 0.26, yaw: 0, ap: 0.016 }) },
+  { to: 7.6, label: () => `05 dry · ${look.water.toFixed(1)}% water`, cam: (u) => ({ p: center(), d: wideDist * 0.9, az: 0, el: 0.24, yaw: lerp(-0.7, 0.45, sm(u)), ap: 0.006 }) },
+  { to: 10.0, label: () => `06 bisque · ${Math.round(look.T)}°c`, cam: (u) => ({ p: pt(2, 0, 0.3), d: lerp(5.0, 4.0, u), az: -0.22, el: 0.1, yaw: -0.05, ap: 0.014 }) },
+  { to: 11.6, label: () => '07 dip · celadon', cam: (u) => ({ p: center(), d: wideDist * 0.88, az: lerp(0.7, 0.6, u), el: 0.12, yaw: 0, ap: 0.01 }) },
+  { to: 13.8, label: () => `08 glaze fire · ${Math.round(look.T).toLocaleString('en-US')}°c`, cam: (u) => ({ p: pt(1, 0.02, lerp(0.22, 0.12, u)), d: lerp(3.9, 3.3, u), az: -0.12, el: 0.06, yaw: 0, ap: 0.016 }) },
+  { to: 16.0, label: () => '09 cone 6', cam: (u) => ({ p: center(), d: wideDist * lerp(0.9, 0.8, u), az: lerp(-0.45, 0.25, sm(u)), el: 0.18, yaw: 0, ap: 0.012 }) },
   ...MONTAGE.glazes.map((g, i) => ({
     to: MONTAGE.at + (i + 1) * MONTAGE.every, glaze: g, label: () => GLAZES[g].name,
-    cam: (u) => ({ p: pt([0, 2, 3, 1][i], [-0.12, 0, 0.12, 0][i], [0.35, 0.25, 0.5, 0.45][i]), d: 0.9 - 0.08 * u, az: [-0.3, 0.25, 0.4, -0.15][i], el: [0.12, 0.2, 0.08, 0.16][i], yaw: 0, ap: 0.028 }),
+    cam: (u) => ({ p: pt([0, 2, 3, 1][i], [-0.12, 0, 0.12, 0][i], [0.35, 0.25, 0.5, 0.45][i]), d: 3.9 - 0.3 * u, az: [-0.3, 0.25, 0.4, -0.15][i], el: [0.12, 0.2, 0.08, 0.16][i], yaw: 0, ap: 0.016 }),
   })),
-  { to: DURATION, label: () => '', cam: (u) => ({ p: [0, clay.capY * 0.45 - 0.28, 0], d: wideDist * 1.05, az: lerp(-0.2, 0.15, u), el: 0.2, yaw: 0, ap: 0.004 }) },
+  { to: DURATION, label: () => '', cam: (u) => ({ p: [0, clay.capY * 0.45 - 0.28, 0], d: wideDist * 0.98, az: lerp(-0.2, 0.15, u), el: 0.2, yaw: 0, ap: 0.004 }) },
 ];
 function shotAt(t) {
   let from = 0;
@@ -260,7 +260,7 @@ function render(t) {
 
   bokeh.uniforms.focus.value = c.d;
   bokeh.uniforms.aperture.value = c.ap;
-  bloom.strength = heat * 1.3;
+  bloom.strength = heat * 0.55;
   composer.render();
 
   // caption
