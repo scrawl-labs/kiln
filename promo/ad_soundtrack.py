@@ -78,57 +78,62 @@ def dropped(at):
     return any(a - 0.01 <= at < b for a, b in DROPS) or at >= 18.5
 
 
-# drums and bass
-for i in range(int(DUR / (BEAT / 2))):
-    at = i * BEAT / 2
-    if at < 1.0 or dropped(at):
-        continue
-    on_beat = i % 2 == 0
-    if on_beat:
-        place(kick(), at, 0.9)
-        bar = int(at // 2) % 4
-        place(bass(ROOTS[bar] * (2 if (i // 2) % 4 == 3 else 1)), at, 0.8)
-    else:
-        place(hat(open_=(i % 8 == 7)), at, 0.5, pan=0.3)
-    if i % 4 == 2:
-        place(clap(), at, 0.45, pan=-0.1)
+def main(out):
+    # drums and bass
+    for i in range(int(DUR / (BEAT / 2))):
+        at = i * BEAT / 2
+        if at < 1.0 or dropped(at):
+            continue
+        on_beat = i % 2 == 0
+        if on_beat:
+            place(kick(), at, 0.9)
+            bar = int(at // 2) % 4
+            place(bass(ROOTS[bar] * (2 if (i // 2) % 4 == 3 else 1)), at, 0.8)
+        else:
+            place(hat(open_=(i % 8 == 7)), at, 0.5, pan=0.3)
+        if i % 4 == 2:
+            place(clap(), at, 0.45, pan=-0.1)
 
-# the opening words land on hits
-for at in [0.15, 0.4, 0.65]:
-    place(kick(), at, 0.8)
-    place(click(), at, 0.3)
-place(whoosh(1.0), 1.0, 0.5)
+    # the opening words land on hits
+    for at in [0.15, 0.4, 0.65]:
+        place(kick(), at, 0.8)
+        place(click(), at, 0.3)
+    place(whoosh(1.0), 1.0, 0.5)
 
-# phone UI
-place(whoosh(0.5, rising=False), 2.0, 0.6, pan=0.2)
-place(whoosh(0.5, rising=False), 12.0, 0.6, pan=0.2)
-for at in TOUCHES:
-    place(click(), at, 0.55)
-for i, at in enumerate(TYPE_AT):
-    place(click(), at - 0.02, 0.45, pan=-0.2 + i * 0.13)
-    place(plop(), at + 0.04, 0.5, pan=-0.3 + i * 0.2)
-place(whoosh(0.7), 4.3, 0.8)
+    # phone UI
+    place(whoosh(0.5, rising=False), 2.0, 0.6, pan=0.2)
+    place(whoosh(0.5, rising=False), 12.0, 0.6, pan=0.2)
+    for at in TOUCHES:
+        place(click(), at, 0.55)
+    for i, at in enumerate(TYPE_AT):
+        place(click(), at - 0.02, 0.45, pan=-0.2 + i * 0.13)
+        place(plop(), at + 0.04, 0.5, pan=-0.3 + i * 0.2)
+    place(whoosh(0.7), 4.3, 0.8)
 
-# shaping
-for at, kind in TOOLS:
-    place(squish() if kind == 'press' else plop(150, 70, 0.25), at, 0.55)
-place(scrape(CARVE[1]), CARVE[0], 0.35)
+    # shaping
+    for at, kind in TOOLS:
+        place(squish() if kind == 'press' else plop(150, 70, 0.25), at, 0.55)
+    place(scrape(CARVE[1]), CARVE[0], 0.35)
 
-# kilns, with a riser into each and an impact out of the second
-place(whoosh(1.0), 9.0, 0.6)
-place(kiln(*FIRE1), FIRE1[0], 1.3)
-place(dip(), 13.4, 0.6)
-place(whoosh(0.5), 14.0, 0.6)
-place(kiln(*FIRE2), FIRE2[0], 1.5)
-place(impact(), 16.5, 0.9)
+    # kilns, with a riser into each and an impact out of the second
+    place(whoosh(1.0), 9.0, 0.6)
+    place(kiln(*FIRE1), FIRE1[0], 1.3)
+    place(dip(), 13.4, 0.6)
+    place(whoosh(0.5), 14.0, 0.6)
+    place(kiln(*FIRE2), FIRE2[0], 1.5)
+    place(impact(), 16.5, 0.9)
 
-# glaze swaps and the sign-off
-for at, semis in [(17.0, 4), (17.5, 7), (18.0, 12)]:
-    place(bell(440 * 2 ** (semis / 12), 0.8), at, 0.2, pan=-0.3 + semis / 30)
-place(impact(), 18.5, 0.6)
-place(bell(440, 2.4), 18.5, 0.45)
-place(bell(659.25, 2.4), 18.52, 0.3)
-place(bell(880, 2.4), 18.54, 0.2)
+    # glaze swaps and the sign-off
+    for at, semis in [(17.0, 4), (17.5, 7), (18.0, 12)]:
+        place(bell(440 * 2 ** (semis / 12), 0.8), at, 0.2, pan=-0.3 + semis / 30)
+    place(impact(), 18.5, 0.6)
+    place(bell(440, 2.4), 18.5, 0.45)
+    place(bell(659.25, 2.4), 18.52, 0.3)
+    place(bell(880, 2.4), 18.54, 0.2)
 
-fade = np.minimum(1, (DUR - np.arange(len(mix)) / SR) / 1.2)[:, None]
-write(sys.argv[1] if len(sys.argv) > 1 else 'kiln-ad.wav', mix * fade)
+    fade = np.minimum(1, (DUR - np.arange(len(mix)) / SR) / 1.2)[:, None]
+    write(out, mix * fade)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1] if len(sys.argv) > 1 else 'kiln-ad.wav')

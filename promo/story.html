@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KILN story ad</title>
+<!-- 1080×1920 morphing-UI ad: a chat story hands off to one element that keeps changing shape
+     (pill → icon → field → card → product → progress) until the fired piece. Rendered by
+     promo/render.mjs --page story.html -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Martian+Mono:wght@400;500&display=swap">
+<script type="importmap">{ "imports": { "three": "../vendor/three.module.js" } }</script>
+<style>
+  :root { --f: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif; --mono: "Martian Mono", ui-monospace, monospace; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; font-family: var(--f); -webkit-font-smoothing: antialiased; }
+  .layer { position: absolute; inset: 0; }
+  #glow { opacity: 0; background: radial-gradient(70% 40% at 50% 50%, rgba(255,120,40,.6), rgba(190,50,10,.18) 55%, transparent 80%); }
+  #c { position: absolute; left: 0; top: 0; display: none; }
+
+  /* chat */
+  #chat { position: absolute; left: 60px; right: 60px; top: 0; height: 1180px; }
+  #chatCol { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 16px; }
+  .stamp { align-self: center; color: #8e8e93; font: 500 26px/1 var(--f); margin-bottom: 14px; }
+  .b { max-width: 920px; padding: 26px 38px; border-radius: 46px; font: 400 46px/1.2 var(--f); letter-spacing: -0.01em; color: #fff; transform-origin: bottom left; }
+  .b.L { align-self: flex-start; background: #26252a; }
+  .b.R { align-self: flex-end; background: #0a84ff; transform-origin: bottom right; }
+  .b .w { display: inline-block; white-space: pre; }
+  .dots { display: flex; gap: 10px; padding: 30px 34px; }
+  .dots i { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,.85); }
+  .read { align-self: flex-end; color: #8e8e93; font: 500 22px/1 var(--f); margin-top: -8px; }
+
+  /* the morphing element */
+  #hero { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 50% 50%; }
+  .k { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
+  .pill-t { font: 600 60px/1 var(--f); color: #fff; letter-spacing: -0.02em; }
+  .icon-t { font: 500 64px/1 var(--mono); color: #fff; letter-spacing: .12em; margin-right: -.12em; }
+  .field { width: 840px; display: flex; align-items: center; gap: 26px; font: 500 52px/1 var(--f); color: #111; letter-spacing: -0.02em; }
+  .field .ph { color: #8b8b88; }
+  .field .grow { flex: 1; display: flex; align-items: center; }
+  .caret { display: inline-block; width: 4px; height: 56px; background: #0a84ff; margin-left: 4px; }
+  .chip { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 40px; padding: 16px 26px; font: 500 34px/1 var(--f);
+    box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .chip b { font-family: 'Bagel Fat One'; font-weight: 400; font-size: 36px; }
+  .opt { width: 840px; display: flex; align-items: center; gap: 30px; }
+  .opt .sw { width: 64px; height: 64px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(0,0,0,.12); flex: none; }
+  .opt .t1 { font: 600 46px/1.1 var(--f); color: #111; letter-spacing: -0.02em; }
+  .opt .t2 { font: 400 32px/1.2 var(--f); color: #77776f; margin-top: 6px; }
+  .prod { width: 840px; display: flex; flex-direction: column; gap: 34px; }
+  .prod .row { display: flex; align-items: center; gap: 30px; }
+  .thumb { width: 300px; height: 210px; flex: none; }
+  .prod .t1 { font: 700 60px/1 var(--f); color: #111; letter-spacing: -0.03em; }
+  .prod .t2 { font: 400 32px/1.3 var(--f); color: #6f6f68; margin-top: 10px; }
+  .tag { display: inline-block; margin-top: 14px; background: #0a84ff; color: #fff; font: 600 26px/1 var(--f); padding: 8px 16px; border-radius: 10px; }
+  .prod .temp { margin-left: auto; align-self: flex-start; font: 600 38px/1 var(--f); color: #111; padding-top: 10px; }
+  .btn { height: 120px; border-radius: 18px; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; font: 600 46px/1 var(--f); }
+  .btn-t { font: 600 46px/1 var(--f); color: #fff; }
+  .prog { width: 820px; text-align: center; }
+  .prog .t1 { font: 700 62px/1.05 var(--f); color: #111; letter-spacing: -0.03em; }
+  .prog .t2 { font: 400 34px/1.2 var(--f); color: #6f6f68; margin-top: 12px; }
+  .bar { margin: 40px auto 0; width: 760px; height: 12px; border-radius: 6px; background: #dcdcd8; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 6px; }
+
+  #notif { position: absolute; left: 70px; right: 70px; top: 760px; border-radius: 42px; padding: 34px 40px; opacity: 0;
+    background: rgba(250,250,248,.92); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+  #notif .top { display: flex; align-items: center; gap: 18px; font: 500 30px/1 var(--f); color: #3c3c3a; letter-spacing: .02em; }
+  #notif .ic { width: 52px; height: 52px; border-radius: 13px; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; font: 500 13px/1 var(--mono); letter-spacing: .1em; }
+  #notif .now { margin-left: auto; color: #8a8a86; }
+  #notif .t1 { margin-top: 22px; font: 700 44px/1.15 var(--f); color: #111; letter-spacing: -0.02em; }
+  #notif .t2 { margin-top: 6px; font: 400 38px/1.2 var(--f); color: #3c3c3a; }
+
+  #end { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; }
+  #end span { font: 500 120px/1 var(--mono); letter-spacing: .14em; margin-right: -.14em; color: #111; }
+  #cursor { position: absolute; left: 0; top: 0; width: 64px; height: 64px; opacity: 0; transform-origin: 6px 4px; }
+  .w { display: inline-block; white-space: pre; }
+</style>
+</head>
+<body>
+<div class="layer" id="bg"></div>
+<div id="chat"><div id="chatCol"></div></div>
+<div id="hero"></div>
+<div class="layer" id="glow"></div>
+<canvas id="c"></canvas>
+<div class="layer" id="dim"></div>
+<div id="notif">
+  <div class="top"><span class="ic">KILN</span>KILN<span class="now">now</span></div>
+  <div class="t1" id="nT1"></div>
+  <div class="t2" id="nT2"></div>
+</div>
+<div id="end"><span>KILN</span></div>
+<svg id="cursor" viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M8 4 L8 50 L19 39 L27 58 L35 55 L27 36 L43 36 Z" fill="#111" stroke="#fff" stroke-width="3.5" stroke-linejoin="round"/>
+</svg>
+<script type="module" src="story.js"></script>
+</body>
+</html>

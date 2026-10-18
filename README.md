@@ -61,3 +61,12 @@ phone, kinetic type cards and full-bleed clay close-ups, cut to a 120 bpm beat.
 python3 promo/ad_soundtrack.py ad.wav
 node promo/render.mjs --page ad.html --out kiln-ad.mp4 --audio ad.wav
 ```
+
+`promo/story.html` is a third cut modelled on morphing UI ads: a chat story hands off to
+one element that keeps changing shape (pill, app icon, input, option card, product card,
+progress) until the fired piece and a notification.
+
+```sh
+python3 promo/story_soundtrack.py story.wav
+node promo/render.mjs --page story.html --out kiln-story.mp4 --audio story.wav
+```
