@@ -70,3 +70,11 @@ progress) until the fired piece and a notification.
 python3 promo/story_soundtrack.py story.wav
 node promo/render.mjs --page story.html --out kiln-story.mp4 --audio story.wav
 ```
+
+`promo/asmr.html` is the wordless cut: macro shots with depth of field and bloom, close
+foley (wet clay, the loop tool, the kiln, glaze pinging as it cools) and one-line captions.
+
+```sh
+python3 promo/asmr_soundtrack.py asmr.wav
+node promo/render.mjs --page asmr.html --out kiln-asmr.mp4 --audio asmr.wav
+```

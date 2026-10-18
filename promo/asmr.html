@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KILN asmr</title>
+<!-- 1080×1920 wordless process cut: macro shots with depth of field, bloom in the kiln.
+     Rendered by promo/render.mjs --page asmr.html -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Martian+Mono:wght@300;400;500&family=Schibsted+Grotesk:wght@600;700&display=swap">
+<script type="importmap">{ "imports": { "three": "../vendor/three.module.js" } }</script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #e2e4df; }
+  canvas { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+  #label { position: absolute; left: 72px; bottom: 360px; font: 400 30px/1.35 "Martian Mono", ui-monospace, monospace;
+    letter-spacing: .06em; color: #191c1a; text-transform: lowercase; transition: none; }
+  #label b { font-weight: 500; }
+  #label .n { opacity: .5; margin-right: 18px; }
+  #end { position: absolute; left: 0; right: 0; bottom: 330px; text-align: center; opacity: 0; color: #191c1a; }
+  #end .mark { font: 500 110px/1 "Martian Mono", monospace; letter-spacing: .2em; margin-right: -.2em; }
+  #end .tag { margin-top: 28px; font: 600 50px/1 "Schibsted Grotesk", Arial, sans-serif; letter-spacing: -0.03em; }
+  #end .cta { margin-top: 22px; font: 400 24px/1 "Martian Mono", monospace; letter-spacing: .14em; text-transform: uppercase; opacity: .55; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div id="label"></div>
+<div id="end"><div class="mark">KILN</div><div class="tag">Type a word. Fire it.</div><div class="cta">clay type studio · link in bio</div></div>
+<script type="module" src="asmr.js"></script>
+</body>
+</html>
