@@ -3,15 +3,15 @@ import * as THREE from 'three';
 // Clay bodies: colour at each point of the process (sRGB).
 export const BODIES = {
   terracotta: {
-    name: 'Terracotta', ko: '테라코타', note: 'Earthenware, iron-red. Fires to 1060°C.',
+    name: 'Terracotta', note: 'Earthenware, iron-red. Fires to 1060°C.',
     wet: '#6e3a26', dry: '#c08a6c', fired: '#c0603a', speckle: 0.0, grog: 0.6,
   },
   stoneware: {
-    name: 'Speckled stoneware', ko: '석기토', note: 'Buff body with iron speckle. Fires to 1240°C.',
+    name: 'Speckled stoneware', note: 'Buff body with iron speckle. Fires to 1240°C.',
     wet: '#6f675c', dry: '#c7c0b3', fired: '#d6c7ad', speckle: 1.0, grog: 1.0,
   },
   porcelain: {
-    name: 'Porcelain', ko: '백자토', note: 'Fine, white, unforgiving. Fires to 1280°C.',
+    name: 'Porcelain', note: 'Fine, white, unforgiving. Fires to 1280°C.',
     wet: '#9c9a93', dry: '#e4e1d9', fired: '#f2f0ea', speckle: 0.0, grog: 0.15,
   },
 };
@@ -19,19 +19,19 @@ export const BODIES = {
 // Glazes: raw (as dipped, powdery) and fired appearance.
 export const GLAZES = {
   celadon: {
-    name: 'Celadon', ko: '청자유', raw: '#d9d8d0', base: '#93b8a3', pool: '#4f7f6b', brk: '#c5d9cb', rough: 0.07, clarity: 0.55,
+    name: 'Celadon', raw: '#d9d8d0', base: '#93b8a3', pool: '#4f7f6b', brk: '#c5d9cb', rough: 0.07, clarity: 0.55,
   },
   tenmoku: {
-    name: 'Tenmoku', ko: '천목유', raw: '#b8a797', base: '#22150f', pool: '#0c0806', brk: '#9a5326', rough: 0.05, clarity: 0.0,
+    name: 'Tenmoku', raw: '#b8a797', base: '#22150f', pool: '#0c0806', brk: '#9a5326', rough: 0.05, clarity: 0.0,
   },
   shino: {
-    name: 'Shino', ko: '시노유', raw: '#efe9df', base: '#ece2d3', pool: '#f6f1ea', brk: '#cc7a45', rough: 0.32, clarity: 0.1,
+    name: 'Shino', raw: '#efe9df', base: '#ece2d3', pool: '#f6f1ea', brk: '#cc7a45', rough: 0.32, clarity: 0.1,
   },
   cobalt: {
-    name: 'Cobalt', ko: '코발트', raw: '#cfc8d6', base: '#1d3a8f', pool: '#0f1f5e', brk: '#5d7fd1', rough: 0.06, clarity: 0.2,
+    name: 'Cobalt', raw: '#cfc8d6', base: '#1d3a8f', pool: '#0f1f5e', brk: '#5d7fd1', rough: 0.06, clarity: 0.2,
   },
   jun: {
-    name: 'Jun blue', ko: '균요유', raw: '#dcdcd6', base: '#9db1cf', pool: '#6b7fae', brk: '#c98a7a', rough: 0.12, clarity: 0.05,
+    name: 'Jun blue', raw: '#dcdcd6', base: '#9db1cf', pool: '#6b7fae', brk: '#c98a7a', rough: 0.12, clarity: 0.05,
   },
 };
 

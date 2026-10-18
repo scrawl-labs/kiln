@@ -12,7 +12,6 @@
 
   --f-ui: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --f-mono: "Martian Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --f-ko: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 
   --gut: max(16px, env(safe-area-inset-left, 0px));
   --gut-r: max(16px, env(safe-area-inset-right, 0px));
@@ -50,7 +49,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 .mono { font-family: var(--f-mono); font-feature-settings: "zero" 0; }
-.ko { font-family: var(--f-ko); }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
 
@@ -84,7 +82,6 @@ button { font: inherit; color: inherit; }
   font: 500 15px/1 var(--f-mono); letter-spacing: 0.32em;
 }
 .mark-sub { color: var(--ink-2); font-size: 13px; display: flex; gap: 10px; }
-.mark-sub .ko { font-size: 12px; }
 .top-right { display: flex; align-items: center; gap: 14px; }
 .piece { font-size: 11px; color: var(--ink-2); letter-spacing: 0.08em; }
 
@@ -118,7 +115,6 @@ body[data-stage="4"] [data-pane="4"], body[data-stage="5"] [data-pane="5"] {
 }
 @keyframes pane-in { from { opacity: 0; transform: translateY(8px); } }
 .eyebrow { margin: 0; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); }
-.eyebrow .ko { text-transform: none; letter-spacing: 0; margin-left: 6px; font-size: 11px; }
 .pane-title {
   margin: -6px 0 0; font-size: 22px; line-height: 1.12; font-weight: 600;
   letter-spacing: -0.015em; text-wrap: balance;
@@ -140,7 +136,7 @@ body[data-stage="4"] [data-pane="4"], body[data-stage="5"] [data-pane="5"] {
 }
 .chip .dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
 .chip .nm { font-weight: 500; }
-.chip .sub { color: var(--ink-2); font-size: 11.5px; font-family: var(--f-ko); }
+.chip .sub { color: var(--ink-2); font-size: 11.5px; }
 .chip[aria-checked="true"] .nm { color: var(--cobalt); }
 .chip[aria-checked="true"] .dot { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--cobalt); }
 .chip .glyph { font-size: 18px; line-height: 1; width: 18px; text-align: center; }

@@ -660,12 +660,12 @@ function radioGroup(container, items, current, render, onPick) {
 }
 
 radioGroup($('#bodies'), BODIES, state.body,
-  (k, v) => `<span class="dot" style="background:${v.dry}"></span><span class="nm">${v.name}</span><span class="sub">${v.ko}</span>`,
+  (k, v) => `<span class="dot" style="background:${v.dry}"></span><span class="nm">${v.name}</span><span class="sub">^${FIRING[k].cone}</span>`,
   (k) => { state.body = k; setBody(material, k); $('#body-note').textContent = BODIES[k].note; updateLog(); });
 $$('#bodies .chip, #bodies button').forEach((b) => b.classList.add('chip'));
 
 radioGroup($('#moulds'), MOULDS, state.mould,
-  (k, v) => `<span class="glyph" style="font-family:${v.family}">가</span><span class="nm">${v.name}</span><span class="sub" style="font-family:${v.family}">Aa 흙</span>`,
+  (k, v) => `<span class="glyph" style="font-family:${v.family}">a</span><span class="nm">${v.name}</span><span class="sub" style="font-family:${v.family}">Clay</span>`,
   (k) => { state.mould = k; setWord($('#word').value, { regrowAll: true }); });
 $$('#moulds button').forEach((b) => b.classList.add('chip'));
 

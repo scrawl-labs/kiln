@@ -3,19 +3,16 @@
 Type a word and it is built out of clay. Work it with your hands, let it dry,
 fire it, dip it in glaze and fire it again.
 
-흙으로 빚는 글자. 단어를 입력하면 흙 덩어리가 글자로 빚어지고, 손으로 누르고
-깎은 뒤 건조 → 초벌 → 시유 → 재벌 과정을 거쳐 도자기 글자로 완성됩니다.
-
 ## Process
 
-| Step | | What happens |
-| --- | --- | --- |
-| 01 Wedge | 꼬박밀기 | Pick a clay body and a mould (letterform), then type. Each new letter is slapped on as a fresh lump. |
-| 02 Shape | 성형 | Press, add, carve and smooth the clay. Drag the empty space to turn the banding wheel. |
-| 03 Dry | 건조 | Water drops from 22% to bone dry; the clay pales and shrinks about 5%. |
-| 04 Bisque | 초벌 | First firing to cone 08 (950°C). |
-| 05 Glaze | 시유 | Choose a glaze and a dip depth. Raw glaze is chalky until fired. |
-| 06 Glaze fire | 재벌 | Second firing to the body's cone. The glaze melts, runs and turns glossy. |
+| Step | What happens |
+| --- | --- |
+| 01 Wedge | Pick a clay body and a mould (letterform), then type. Each new letter is slapped on as a fresh lump. |
+| 02 Shape | Press, add, carve and smooth the clay. Drag the empty space to turn the banding wheel. |
+| 03 Dry | Water drops from 22% to bone dry; the clay pales and shrinks about 5%. |
+| 04 Bisque | First firing to cone 08 (950°C). |
+| 05 Glaze | Choose a glaze and a dip depth. Raw glaze is chalky until fired. |
+| 06 Glaze fire | Second firing to the body's cone. The glaze melts, runs and turns glossy. |
 
 Keys in Shape: `1`–`4` tools, `[` `]` tool size, `⌘Z` / `Ctrl+Z` undo.
 
