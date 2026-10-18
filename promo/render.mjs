@@ -38,7 +38,13 @@ const t0 = Date.now();
 for (let i = 0; i < total; i++) {
   await page.evaluate((n) => window.reel.frame(n), i);
   if (only && !only.has(i)) continue;
-  await page.screenshot({ path: path.join(framesDir, `f${String(i).padStart(4, '0')}.png`) });
+  const file = path.join(framesDir, `f${String(i).padStart(4, '0')}.png`);
+  for (let attempt = 1; ; attempt++) {
+    try { await page.screenshot({ path: file, timeout: 60000 }); break; } catch (e) {
+      if (attempt >= 3) throw e;
+      console.warn(`frame ${i}: screenshot retry ${attempt}`);
+    }
+  }
   if (i % 30 === 0) console.log(`frame ${i}/${total}  ${((Date.now() - t0) / 1000).toFixed(0)}s`);
   if (only && i >= Math.max(...only)) break;
 }
