@@ -24,7 +24,7 @@ const browser = await chromium.launch({
   proxy: process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY } : undefined,
 });
 const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1, ignoreHTTPSErrors: true });
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png' };
 await page.route('http://kiln.local/**', (route) => {
   const file = path.join(root, decodeURIComponent(new URL(route.request().url()).pathname));
   if (!file.startsWith(root) || !fs.existsSync(file)) return route.fulfill({ status: 404, body: '' });

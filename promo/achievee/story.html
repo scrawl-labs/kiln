@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Achievee story ad</title>
+<!-- 1080×1920 morphing-UI ad for Achievee: a chat about a busy week hands off to one element that
+     becomes the app (icon → sign-in → summary → week of badges → day → diary → pattern → month).
+     Rendered by promo/render.mjs --page achievee/story.html -->
+<style>
+  @font-face { font-family: "Pretendard Variable"; src: url("assets/PretendardVariable.woff2") format("woff2-variations"); font-weight: 45 920; }
+  @font-face { font-family: "Dunggeun"; src: url("assets/HakgyoansimDunggeunmiso-B.woff2") format("woff2"); font-weight: 700; }
+  :root {
+    --f: "Pretendard Variable", -apple-system, system-ui, sans-serif; --disp: "Dunggeun", var(--f);
+    --bg: #fbf7f3; --surface: #fff; --surface-2: #f3eee9; --line: #eadfd6;
+    --fg: #1c1b1f; --fg-2: #5e5a57; --fg-3: #8d8883; --accent: #4a5bf0;
+    --c0: #ece6e0; --c1: #ffb199; --c2: #ffd980; --c3: #9be3b4; --c4: #ff9ec4; --ink: #2a2230; --spark: #ffc933;
+    --yellow: #ffe9a3; --green: #cdefc4; --blue: #bbd6fa; --pink: #f9cfe0; --lav: #d9d0fa;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; font-family: var(--f); color: var(--fg);
+    -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .layer { position: absolute; inset: 0; }
+  #brandBg { opacity: 0; }
+
+  /* chat */
+  #chat { position: absolute; left: 60px; right: 60px; top: 0; height: 1180px; }
+  #chatCol { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 16px; }
+  .stamp { align-self: center; color: #8e8e93; font: 500 26px/1 var(--f); margin-bottom: 14px; }
+  .b { max-width: 940px; padding: 26px 38px; border-radius: 46px; font: 400 46px/1.2 var(--f); letter-spacing: -0.015em; color: #fff; transform-origin: bottom left; }
+  .b.L { align-self: flex-start; background: #26252a; }
+  .b.R { align-self: flex-end; background: #0a84ff; transform-origin: bottom right; }
+  .dots { display: flex; gap: 10px; padding: 30px 34px; }
+  .dots i { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,.85); }
+  .w { display: inline-block; white-space: pre; }
+
+  /* the morphing element */
+  #hero { position: absolute; left: 0; top: 0; overflow: hidden; display: none; }
+  .k { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .pill-t { font: 650 62px/1 var(--f); color: #fff; letter-spacing: -0.03em; white-space: nowrap; }
+  .gbtn { display: flex; align-items: center; gap: 26px; font: 600 50px/1 var(--f); color: #1f1f1f; white-space: nowrap; letter-spacing: -0.02em; }
+  .sum { width: 900px; display: grid; grid-template-columns: repeat(3, 1fr); }
+  .sum > div { padding: 0 34px; display: flex; flex-direction: column; gap: 10px; }
+  .sum > div + div { border-left: 2px solid var(--line); }
+  .sum dt { font: 500 30px/1 var(--f); color: var(--fg-3); }
+  .sum dd { margin: 0; font: 700 64px/1 var(--f); letter-spacing: -0.04em; white-space: nowrap; }
+  .sum dd small { font-size: 36px; color: var(--fg-3); font-weight: 600; }
+  .week { width: 900px; }
+  .week .hd, .week .row { display: grid; grid-template-columns: repeat(7, 1fr); justify-items: center; }
+  .week .hd span { font: 600 28px/1 var(--f); color: var(--fg-3); padding-bottom: 26px; }
+  .week .row > span { width: 112px; height: 112px; position: relative; }
+  .blob { width: 100%; height: 100%; overflow: visible; display: block; }
+  .blob .lbl { font: 800 17px var(--f); fill: var(--ink); }
+  .blob .spark { fill: var(--spark); }
+  .confetti i { position: absolute; left: 50%; top: 50%; display: block; }
+  .det { width: 880px; display: flex; flex-direction: column; gap: 28px; }
+  .det h2 { margin: 0; font: 700 46px/1 var(--f); letter-spacing: -0.03em; }
+  .det h2 small { font: 500 32px var(--f); color: var(--fg-3); margin-left: 12px; letter-spacing: 0; }
+  .big { font: 700 120px/1 var(--f); letter-spacing: -0.05em; }
+  .big span { font-size: 52px; color: var(--fg-3); font-weight: 600; }
+  .meter { height: 16px; border-radius: 9px; background: var(--surface-2); overflow: hidden; }
+  .meter i { display: block; height: 100%; background: var(--accent); border-radius: 9px; }
+  .tasks { display: flex; flex-direction: column; gap: 22px; border-top: 2px solid var(--line); padding-top: 28px; }
+  .tasks div { display: flex; align-items: center; gap: 24px; font: 500 40px/1 var(--f); color: var(--fg-2); }
+  .check { flex: none; width: 46px; height: 46px; border-radius: 99px; border: 4px solid var(--line); display: grid; place-items: center; }
+  .check svg { width: 30px; height: 30px; }
+  .diary { width: 880px; display: flex; flex-direction: column; gap: 30px; }
+  .lab { font: 600 30px/1 var(--f); color: #8a5a6a; }
+  .mood { display: flex; gap: 18px; }
+  .mood i { width: 40px; height: 40px; border-radius: 50%; background: #fff; opacity: .9; }
+  .diary b { font: 700 54px/1.15 var(--f); letter-spacing: -0.03em; }
+  .chips { display: flex; gap: 14px; flex-wrap: wrap; }
+  .chips span { background: #fff; border-radius: 99px; padding: 14px 26px; font: 600 32px/1 var(--f); color: #6d4456; }
+  .ins { width: 880px; display: flex; flex-direction: column; gap: 26px; }
+  .ins .t1 { font: 700 50px/1.12 var(--f); letter-spacing: -0.03em; }
+  .bars { display: flex; flex-direction: column; gap: 18px; }
+  .bars div { display: grid; grid-template-columns: 250px 1fr 90px; align-items: center; gap: 20px; font: 600 30px/1 var(--f); color: #3e5a3c; }
+  .bars i { display: block; height: 34px; border-radius: 12px; }
+  .bars em { font-style: normal; text-align: right; color: var(--fg); }
+  .ins small { font: 500 26px/1.35 var(--f); color: #557153; }
+  .month { position: absolute; inset: 0; transform: none; left: 0; top: 0; padding: 250px 56px 0; }
+  .month h4 { margin: 0 0 40px; font: 700 84px/1 var(--f); letter-spacing: -0.04em; }
+  .month .sum { width: auto; border: 2px solid var(--line); border-radius: 36px; background: #fff; padding: 34px 0; margin-bottom: 64px; }
+  .month .hd, .month .grid { display: grid; grid-template-columns: repeat(7, 1fr); justify-items: center; }
+  .month .hd span { font: 600 30px/1 var(--f); color: var(--fg-3); padding-bottom: 28px; }
+  .month .grid { row-gap: 44px; }
+  .month .grid > span { width: 134px; height: 134px; position: relative; }
+
+  #notif { position: absolute; left: 60px; right: 60px; top: 760px; border-radius: 44px; padding: 34px 40px; opacity: 0;
+    background: rgba(255,255,255,.94); box-shadow: 0 24px 70px rgba(60,30,50,.25); }
+  #notif .top { display: flex; align-items: center; gap: 18px; font: 600 30px/1 var(--f); color: #4a4542; letter-spacing: .01em; }
+  #notif .top svg { width: 54px; height: 54px; border-radius: 13px; }
+  #notif .now { margin-left: auto; color: #8d8883; font-weight: 500; }
+  #notif .t1 { margin-top: 22px; font: 700 46px/1.15 var(--f); letter-spacing: -0.02em; }
+  #notif .t2 { margin-top: 8px; font: 500 38px/1.25 var(--f); color: #4a4542; }
+  #dim { pointer-events: none; }
+
+  #end { position: absolute; inset: 0; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; }
+  #end .wm { width: 760px; color: #1c1b1f; }
+  #end p { margin: 0; font: 600 40px/1.3 var(--f); color: #6b4d4a; text-align: center; letter-spacing: -0.02em; }
+  .floater { position: absolute; display: block; filter: drop-shadow(0 16px 20px rgba(40,60,100,.18)); }
+  #cursor { position: absolute; left: 0; top: 0; width: 64px; height: 64px; opacity: 0; transform-origin: 6px 4px; }
+</style>
+</head>
+<body>
+<div class="layer" id="bg"></div>
+<div class="layer" id="brandBg"></div>
+<div id="chat"><div id="chatCol"></div></div>
+<div id="hero"></div>
+<div class="layer" id="dim"></div>
+<div id="notif">
+  <div class="top"><span id="nIcon"></span>Achievee<span class="now">now</span></div>
+  <div class="t1" id="nT1"></div>
+  <div class="t2" id="nT2"></div>
+</div>
+<div id="end"></div>
+<svg id="cursor" viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M8 4 L8 50 L19 39 L27 58 L35 55 L27 36 L43 36 Z" fill="#111" stroke="#fff" stroke-width="3.5" stroke-linejoin="round"/>
+</svg>
+<script type="module" src="story.js"></script>
+</body>
+</html>
