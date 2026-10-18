@@ -139,28 +139,38 @@ def pad():
     return lowpass(out, 1800) * fade * duck * 0.05
 
 
-place(pad(), 0)
-for i, at in enumerate(TYPE_AT):
-    place(click(), at - 0.02, 0.5, pan=-0.2 + i * 0.13)
-    place(plop(), at + 0.05, 0.55, pan=-0.3 + i * 0.2)
-for at, kind in TOOLS:
-    place(squish() if kind == 'press' else plop(150, 70, 0.25), at, 0.5)
-place(scrape(CARVE[1]), CARVE[0], 0.35, pan=-0.1)
-for at in SCENES:
-    place(tick(), at, 0.6)
-place(kiln(*BISQUE), BISQUE[0], 1.0)
-place(kiln(*GLOST), GLOST[0], 1.2)
-place(dip(), DIP, 0.6)
-for i, at in enumerate(MONTAGE):
-    place(bell(523.25 * 2 ** ([0, 4, 7, 9, 12][i] / 12), 0.9), at, 0.18, pan=-0.4 + i * 0.2)
-place(bell(523.25), 22.6, 0.5)
-place(bell(783.99), 22.62, 0.3)
 
-peak = np.max(np.abs(mix))
-mix = np.tanh(mix / peak * 1.4) * 0.85
-pcm = (mix * 32767).astype('<i2')
-with wave.open(sys.argv[1] if len(sys.argv) > 1 else 'kiln-reel.wav', 'wb') as w:
-    w.setnchannels(2)
-    w.setsampwidth(2)
-    w.setframerate(SR)
-    w.writeframes(pcm.tobytes())
+def main(out):
+    place(pad(), 0)
+    for i, at in enumerate(TYPE_AT):
+        place(click(), at - 0.02, 0.5, pan=-0.2 + i * 0.13)
+        place(plop(), at + 0.05, 0.55, pan=-0.3 + i * 0.2)
+    for at, kind in TOOLS:
+        place(squish() if kind == 'press' else plop(150, 70, 0.25), at, 0.5)
+    place(scrape(CARVE[1]), CARVE[0], 0.35, pan=-0.1)
+    for at in SCENES:
+        place(tick(), at, 0.6)
+    place(kiln(*BISQUE), BISQUE[0], 1.0)
+    place(kiln(*GLOST), GLOST[0], 1.2)
+    place(dip(), DIP, 0.6)
+    for i, at in enumerate(MONTAGE):
+        place(bell(523.25 * 2 ** ([0, 4, 7, 9, 12][i] / 12), 0.9), at, 0.18, pan=-0.4 + i * 0.2)
+    place(bell(523.25), 22.6, 0.5)
+    place(bell(783.99), 22.62, 0.3)
+
+    write(out, mix)
+
+
+def write(out, buf):
+    peak = np.max(np.abs(buf))
+    buf = np.tanh(buf / peak * 1.4) * 0.85
+    pcm = (buf * 32767).astype('<i2')
+    with wave.open(out, 'wb') as w:
+        w.setnchannels(2)
+        w.setsampwidth(2)
+        w.setframerate(SR)
+        w.writeframes(pcm.tobytes())
+
+
+if __name__ == '__main__':
+    main(sys.argv[1] if len(sys.argv) > 1 else 'kiln-reel.wav')

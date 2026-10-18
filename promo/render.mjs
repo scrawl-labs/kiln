@@ -1,5 +1,5 @@
 // Render promo/reel.html to a 1080×1920 H.264 mp4.
-//   node promo/render.mjs --out kiln-reel.mp4 [--frames dir] [--only 0,90,200] [--audio track.wav]
+//   node promo/render.mjs [--page reel.html|ad.html] --out kiln-reel.mp4 [--frames dir] [--only 0,90,200] [--audio track.wav]
 // Needs Playwright with a Chromium build and ffmpeg on PATH.
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
@@ -16,6 +16,7 @@ const out = path.resolve(arg('out', 'kiln-reel.mp4'));
 const framesDir = path.resolve(arg('frames', path.join(path.dirname(out), 'reel-frames')));
 const only = arg('only') ? new Set(arg('only').split(',').map(Number)) : null;
 const audio = arg('audio');
+const pageName = arg('page', 'reel.html');
 fs.mkdirSync(framesDir, { recursive: true });
 
 const browser = await chromium.launch({
@@ -30,7 +31,7 @@ await page.route('http://kiln.local/**', (route) => {
   route.fulfill({ body: fs.readFileSync(file), contentType: types[path.extname(file)] || 'application/octet-stream' });
 });
 page.on('pageerror', (e) => console.error('page error:', e.message));
-await page.goto('http://kiln.local/promo/reel.html', { waitUntil: 'networkidle' });
+await page.goto(`http://kiln.local/promo/${pageName}`, { waitUntil: 'networkidle' });
 await page.evaluate(() => window.reel.ready);
 const total = await page.evaluate(() => window.reel.frames);
 

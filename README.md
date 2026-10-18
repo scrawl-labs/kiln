@@ -53,3 +53,11 @@ node promo/render.mjs --out kiln-reel.mp4 --audio reel.wav   # needs playwright 
 ```
 
 `--only 30,200,450` renders just those frames as PNGs for a quick check.
+
+`promo/ad.html` is a second, 21-second cut in a UI-animation style: the site in a
+phone, kinetic type cards and full-bleed clay close-ups, cut to a 120 bpm beat.
+
+```sh
+python3 promo/ad_soundtrack.py ad.wav
+node promo/render.mjs --page ad.html --out kiln-ad.mp4 --audio ad.wav
+```
