@@ -37,7 +37,11 @@ const total = await page.evaluate(() => window.reel.frames);
 const t0 = Date.now();
 for (let i = 0; i < total; i++) {
   await page.evaluate((n) => window.reel.frame(n), i);
-  if (only && !only.has(i)) continue;
+  if (only && !only.has(i)) {
+    // let the compositor present skipped frames so GPU work doesn't pile up
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r())));
+    continue;
+  }
   const file = path.join(framesDir, `f${String(i).padStart(4, '0')}.png`);
   for (let attempt = 1; ; attempt++) {
     try { await page.screenshot({ path: file, timeout: 60000 }); break; } catch (e) {
