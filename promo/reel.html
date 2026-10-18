@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KILN reel</title>
+<!-- 1080×1920 recording stage for the 9:16 promo. Driven frame by frame by promo/render.mjs. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Schibsted+Grotesk:wght@500;600;700&family=Martian+Mono:wght@300;400;500&display=swap">
+<script type="importmap">{ "imports": { "three": "../vendor/three.module.js" } }</script>
+<style>
+  :root {
+    --bg: #e2e4df; --ink: #191c1a; --ink-2: #5a605b; --cobalt: #2a43c0;
+    --f-ui: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --f-mono: "Martian Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); -webkit-font-smoothing: antialiased; }
+  canvas { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+  .glow { position: absolute; inset: 0; opacity: 0;
+    background: radial-gradient(70% 45% at 50% 50%, rgba(255,118,40,.6), rgba(190,50,10,.2) 55%, transparent 80%); }
+  .grain { position: absolute; inset: 0; opacity: .55; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .top { position: absolute; left: 84px; right: 84px; top: 200px; }
+  .eyebrow { font: 400 26px/1 var(--f-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2);
+    display: flex; justify-content: space-between; }
+  .head { margin-top: 34px; font: 600 112px/0.98 var(--f-ui); letter-spacing: -0.035em; white-space: pre-line; }
+  .head span { display: block; }
+
+  .readout { position: absolute; left: 84px; right: 84px; top: 1390px; }
+  .big { font: 300 150px/1 var(--f-mono); letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+  .big small { font-size: 32px; letter-spacing: .02em; margin-left: 14px; color: var(--ink-2); }
+  .sub { margin-top: 22px; font: 400 26px/1.3 var(--f-mono); letter-spacing: .06em; color: var(--ink-2); }
+  .bar { margin-top: 30px; height: 4px; background: rgba(127,127,127,.25); position: relative; }
+  .bar i { position: absolute; inset: 0 auto 0 0; background: var(--ink); }
+
+  .typed { font: 500 96px/1.1 var(--f-ui); letter-spacing: -0.02em; text-align: center;
+    border-bottom: 3px solid var(--cobalt); padding-bottom: 22px; }
+  .caret { display: inline-block; width: 5px; height: 84px; background: var(--cobalt); vertical-align: -8px; margin-left: 6px; }
+
+  .ring { position: absolute; border: 3px solid #fff; border-radius: 50%; mix-blend-mode: difference; opacity: 0; }
+  .ring::after { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; background: #fff; border-radius: 50%; }
+
+  .end { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between;
+    padding: 200px 84px 420px; opacity: 0; }
+  .end .mark { font: 500 190px/1 var(--f-mono); letter-spacing: .2em; }
+  .end .tag { font: 600 104px/0.98 var(--f-ui); letter-spacing: -0.035em; }
+  .end .cta { font: 400 28px/1.4 var(--f-mono); letter-spacing: .08em; color: var(--ink-2); text-transform: uppercase; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div class="glow" id="glow"></div>
+<div class="grain"></div>
+<div class="ring" id="ring"></div>
+<div class="top" id="top">
+  <div class="eyebrow"><span id="step">01 / 06</span><span id="stepname">Wedge</span></div>
+  <div class="head" id="head"></div>
+</div>
+<div class="readout" id="readout"></div>
+<div class="end" id="end">
+  <div class="mark">KILN</div>
+  <div>
+    <div class="tag">Type a word.<br>Fire it.</div>
+    <p class="cta">Clay type studio<br>Link in bio</p>
+  </div>
+</div>
+<script type="module" src="reel.js"></script>
+</body>
+</html>

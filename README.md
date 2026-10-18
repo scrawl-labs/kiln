@@ -40,3 +40,16 @@ python3 -m http.server
 
 Then open the printed address. It needs to be served over HTTP because it uses
 ES modules.
+
+## Promo reel
+
+`promo/` holds the 25-second 9:16 reel (1080×1920, 30 fps). It reuses the
+site's clay engine and shader, driven by a fixed script so every frame is
+reproducible.
+
+```sh
+python3 promo/soundtrack.py reel.wav          # synthesised sound design (numpy)
+node promo/render.mjs --out kiln-reel.mp4 --audio reel.wav   # needs playwright + ffmpeg
+```
+
+`--only 30,200,450` renders just those frames as PNGs for a quick check.
