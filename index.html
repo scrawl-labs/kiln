@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kiln Type Studio</title>
+<meta name="description" content="Type a word and it is built out of clay. Shape it with your hands, dry it, fire it, glaze it.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Black+Han+Sans&family=Gasoek+One&family=Jua&family=Schibsted+Grotesk:wght@400;500;600;700&family=Martian+Mono:wght@300;400;500&family=IBM+Plex+Sans+KR:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
+</head>
+<body data-stage="0">
+<div class="grain" aria-hidden="true"></div>
+<div class="glow" aria-hidden="true"></div>
+<canvas id="stage" aria-label="Clay letters on a banding wheel"></canvas>
+
+<header class="top">
+  <div class="mark">
+    <span class="mark-word">KILN</span>
+    <span class="mark-sub">Clay type studio<span class="ko">흙으로 빚는 글자</span></span>
+  </div>
+  <div class="top-right">
+    <span class="piece mono" id="piece">No. 0001</span>
+    <button class="btn ghost" id="save" type="button">Save image</button>
+  </div>
+</header>
+
+<aside class="panel" id="panel">
+  <!-- 01 Wedge -->
+  <section class="step-pane" data-pane="0">
+    <p class="eyebrow mono">01 — Wedge <span class="ko">꼬박밀기</span></p>
+    <h2 class="pane-title">Pick a clay and a mould, then type.</h2>
+    <div class="field">
+      <span class="label mono">Clay body</span>
+      <div class="chips" id="bodies" role="radiogroup" aria-label="Clay body"></div>
+      <p class="hint" id="body-note"></p>
+    </div>
+    <div class="field">
+      <span class="label mono">Mould</span>
+      <div class="chips" id="moulds" role="radiogroup" aria-label="Letter mould"></div>
+    </div>
+  </section>
+
+  <!-- 02 Shape -->
+  <section class="step-pane" data-pane="1">
+    <p class="eyebrow mono">02 — Shape <span class="ko">성형</span></p>
+    <h2 class="pane-title">Work the letters by hand.</h2>
+    <div class="tools" id="tools" role="radiogroup" aria-label="Tool"></div>
+    <div class="field">
+      <label class="label mono" for="brush">Tool size <output id="brush-out" class="mono">M</output></label>
+      <input type="range" id="brush" min="0" max="2" step="1" value="1">
+    </div>
+    <div class="row">
+      <button class="btn ghost" id="undo" type="button">Undo <kbd>⌘Z</kbd></button>
+      <button class="btn ghost" id="reform" type="button">Re-wedge</button>
+    </div>
+    <p class="hint">Drag on the clay to use the tool. Drag the empty space to turn the wheel.</p>
+  </section>
+
+  <!-- 03 Dry -->
+  <section class="step-pane" data-pane="2">
+    <p class="eyebrow mono">03 — Dry <span class="ko">건조</span></p>
+    <h2 class="pane-title">Leave it on the shelf.</h2>
+    <div class="meter">
+      <div class="meter-num mono"><span id="moist">22.0</span><small>% water</small></div>
+      <div class="meter-bar"><i id="moist-bar"></i></div>
+      <ol class="phases mono" id="dry-phases">
+        <li data-at="22">Plastic</li>
+        <li data-at="12">Leather-hard</li>
+        <li data-at="0">Bone dry</li>
+      </ol>
+    </div>
+    <p class="hint">Clay loses about 5% of its size as the water leaves.</p>
+  </section>
+
+  <!-- 04 Bisque -->
+  <section class="step-pane" data-pane="3">
+    <p class="eyebrow mono">04 — Bisque <span class="ko">초벌</span></p>
+    <h2 class="pane-title">First firing, to cone 08.</h2>
+    <div class="kiln">
+      <div class="meter-num mono"><span class="temp" data-temp>20</span><small>°C</small></div>
+      <canvas class="curve" data-curve width="560" height="200" aria-label="Firing curve"></canvas>
+    </div>
+    <button class="btn solid" data-fire="bisque" type="button">Fire the kiln</button>
+  </section>
+
+  <!-- 05 Glaze -->
+  <section class="step-pane" data-pane="4">
+    <p class="eyebrow mono">05 — Glaze <span class="ko">시유</span></p>
+    <h2 class="pane-title">Choose a glaze and dip.</h2>
+    <div class="glazes" id="glazes" role="radiogroup" aria-label="Glaze"></div>
+    <div class="field">
+      <label class="label mono" for="depth">Dip depth <output id="depth-out" class="mono">70%</output></label>
+      <input type="range" id="depth" min="30" max="100" step="5" value="70">
+    </div>
+    <button class="btn solid" id="dip" type="button">Dip</button>
+    <p class="hint">Raw glaze is chalky and pale. The colour only comes out in the kiln.</p>
+  </section>
+
+  <!-- 06 Fire -->
+  <section class="step-pane" data-pane="5">
+    <p class="eyebrow mono">06 — Glaze fire <span class="ko">재벌</span></p>
+    <h2 class="pane-title" id="fire-title">Second firing.</h2>
+    <div class="kiln">
+      <div class="meter-num mono"><span class="temp" data-temp>20</span><small>°C</small></div>
+      <canvas class="curve" data-curve width="560" height="200" aria-label="Firing curve"></canvas>
+    </div>
+    <button class="btn solid" data-fire="glaze" type="button">Fire the kiln</button>
+    <div class="done" id="done" hidden>
+      <p class="done-line">Out of the kiln.</p>
+      <div class="row">
+        <button class="btn solid" id="save2" type="button">Save image</button>
+        <button class="btn ghost" id="again" type="button">New piece</button>
+      </div>
+    </div>
+  </section>
+</aside>
+
+<aside class="log" aria-label="Kiln log">
+  <p class="eyebrow mono">Kiln log</p>
+  <dl class="mono">
+    <div><dt>Word</dt><dd id="log-word">—</dd></div>
+    <div><dt>Body</dt><dd id="log-body">—</dd></div>
+    <div><dt>Water</dt><dd id="log-water">22%</dd></div>
+    <div><dt>Shrinkage</dt><dd id="log-shrink">0.0%</dd></div>
+    <div><dt>Bisque</dt><dd id="log-bisque">—</dd></div>
+    <div><dt>Glaze</dt><dd id="log-glaze">—</dd></div>
+    <div><dt>Glaze fire</dt><dd id="log-fire">—</dd></div>
+    <div><dt>Marks</dt><dd id="log-marks">0</dd></div>
+  </dl>
+</aside>
+
+<div class="type-in" id="type-in">
+  <input id="word" type="text" maxlength="12" autocomplete="off" spellcheck="false" value="clay" aria-label="Word to make in clay">
+  <p class="hint mono">Up to 12 letters. Hangul works too.</p>
+</div>
+
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<p class="toast mono" id="toast" role="status" aria-live="polite"></p>
+
+<nav class="rail" aria-label="Process">
+  <ol id="steps">
+    <li><button type="button" data-step="0"><span class="mono">01</span>Wedge</button></li>
+    <li><button type="button" data-step="1"><span class="mono">02</span>Shape</button></li>
+    <li><button type="button" data-step="2"><span class="mono">03</span>Dry</button></li>
+    <li><button type="button" data-step="3"><span class="mono">04</span>Bisque</button></li>
+    <li><button type="button" data-step="4"><span class="mono">05</span>Glaze</button></li>
+    <li><button type="button" data-step="5"><span class="mono">06</span>Fire</button></li>
+  </ol>
+  <button class="btn solid next" id="next" type="button">Next<span aria-hidden="true">→</span></button>
+</nav>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
