@@ -249,7 +249,8 @@ function render(t) {
   const el = 0.2;
   camera.position.set(0, ty + Math.sin(el) * d, Math.cos(el) * d);
   camera.lookAt(0, ty, 0);
-  camera.setViewOffset(W, H, 0, -40, W, H);
+  // lift the letters clear of the tagline on the end card
+  camera.setViewOffset(W, H, 0, lerp(-40, 190, ease(span(t, 22.4, 23.2))), W, H);
   renderer.render(scene, camera);
 
   // kiln darkness
