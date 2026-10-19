@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KILN icon</title>
+<!-- Renders the site icon: a fired, cobalt-glazed clay K on a plaster tile, made with the site's own
+     clay engine. Screenshot at 512×512 (see promo/favicon.mjs). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap">
+<script type="importmap">{ "imports": { "three": "../vendor/three.module.js" } }</script>
+<style>
+  html, body { margin: 0; width: 512px; height: 512px; background: transparent; overflow: hidden; }
+  #tile { position: absolute; inset: 0; border-radius: 116px; background: #e2e4df; overflow: hidden; }
+  canvas { position: absolute; inset: 0; width: 512px; height: 512px; }
+</style>
+</head>
+<body>
+<div id="tile"><canvas id="c" width="512" height="512"></canvas></div>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from '../vendor/RoomEnvironment.js';
+import { Clay } from '../js/clay.js';
+import { createClayMaterial, setBody, setGlaze } from '../js/material.js';
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(512, 512, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.6;
+const key = new THREE.DirectionalLight(0xfff3e6, 2.6);
+key.position.set(-2.4, 3.6, 3.6);
+scene.add(key, new THREE.HemisphereLight(0xeef1ee, 0x5d564d, 0.6));
+
+await document.fonts.load("100px 'Bagel Fat One'", 'K');
+const clay = new Clay({ budget: 500000 });
+clay.setWord('K', "'Bagel Fat One', sans-serif", 7);
+clay.letters.forEach((L) => { L.grow = 1; });
+clay.build();
+const { positions, indices } = clay.mesh();
+const g = new THREE.BufferGeometry();
+g.setAttribute('position', new THREE.BufferAttribute(positions.slice(), 3));
+g.setIndex(new THREE.BufferAttribute(indices.slice(), 1));
+g.computeVertexNormals();
+g.computeBoundingBox();
+const mat = createClayMaterial();
+setBody(mat, 'stoneware');
+setGlaze(mat, 'cobalt');
+const U = mat.userData.uniforms;
+U.uWet.value = 0; U.uFired.value = 1; U.uGlazeMelt.value = 1; U.uDrip.value = 0.3;
+// glaze the top three quarters, leave a bare foot like a dipped pot
+const bb = g.boundingBox;
+U.uGlazeLine.value = bb.min.y + (bb.max.y - bb.min.y) * 0.24;
+const mesh = new THREE.Mesh(g, mat);
+const c = bb.getCenter(new THREE.Vector3());
+mesh.position.set(-c.x, -c.y, 0);
+const pivot = new THREE.Group();
+pivot.add(mesh);
+pivot.rotation.set(0.08, -0.32, 0.04);
+scene.add(pivot);
+const size = Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y);
+const cam = new THREE.PerspectiveCamera(22, 1, 0.05, 50);
+const d = (size / 0.74) / (2 * Math.tan(THREE.MathUtils.degToRad(11)));
+cam.position.set(0, 0.02, d);
+cam.lookAt(0, 0.0, 0);
+renderer.render(scene, cam);
+document.body.dataset.ready = '1';
+</script>
+</body>
+</html>

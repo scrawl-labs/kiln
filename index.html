@@ -6,6 +6,10 @@
 <title>Kiln Type Studio</title>
 <meta name="description" content="Type a word and it is built out of clay. Shape it with your hands, dry it, fire it, glaze it.">
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#e2e4df">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Black+Han+Sans&family=Gasoek+One&family=Jua&family=Schibsted+Grotesk:wght@400;500;600;700&family=Martian+Mono:wght@300;400;500&display=swap">
@@ -57,7 +61,7 @@
       <button class="btn ghost" id="undo" type="button">Undo <kbd>⌘Z</kbd></button>
       <button class="btn ghost" id="reform" type="button">Re-wedge</button>
     </div>
-    <p class="hint">Drag on the clay to use the tool. Drag the empty space to turn the wheel.</p>
+    <p class="hint">Drag on the clay to use the tool. Drag the empty space to turn the wheel. Pinch or scroll to zoom in for detail.</p>
   </section>
 
   <!-- 03 Dry -->
@@ -136,6 +140,12 @@
 <div class="type-in" id="type-in">
   <input id="word" type="text" maxlength="12" autocomplete="off" spellcheck="false" value="clay" aria-label="Word to make in clay">
   <p class="hint mono">Up to 12 letters.</p>
+</div>
+
+<div class="zoom" id="zoom" role="group" aria-label="Zoom">
+  <button type="button" id="zin" aria-label="Zoom in">+</button>
+  <button type="button" id="zfit" aria-label="Reset zoom" title="Reset zoom (0)">100%</button>
+  <button type="button" id="zout" aria-label="Zoom out">−</button>
 </div>
 
 <div class="cursor" id="cursor" aria-hidden="true"></div>

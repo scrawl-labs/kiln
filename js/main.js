@@ -187,7 +187,45 @@ const growing = () => clay.letters.some((L) => L.delay > 0 || Math.abs(L.grow - 
 
 // ---------------------------------------------------------------- camera fit & turntable
 
-const view = { rot: -0.95, rotTarget: -0.24, vel: 0, dist: 6, distTarget: 6, el: 0.2 };
+const view = { rot: -0.95, rotTarget: -0.24, vel: 0, dist: 6, distTarget: 6, el: 0.2, zoom: 1, panX: 0, panY: 0, px: 0, py: 0 };
+const ZOOM_MIN = 0.6, ZOOM_MAX = 3.5;
+
+// world units per screen pixel on the plane through the piece, at a given zoom
+function worldPerPx(zoom) {
+  return (2 * (view.distTarget / zoom) * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) / innerHeight;
+}
+function clampPan() {
+  const s = mesh.scale.x || 1;
+  const maxX = ((clay.width || 1) / 2) * s, top = (clay.capY || 0.8) * s;
+  view.panX = clamp(view.panX, -maxX, maxX);
+  view.panY = clamp(view.panY, -top * 0.6, top * 0.6);
+  if (view.zoom <= 1) { view.panX *= view.zoom; view.panY *= view.zoom; }
+}
+// zoom so the point under (sx, sy) stays under it
+function zoomAt(z, sx, sy) {
+  z = clamp(z, ZOOM_MIN, ZOOM_MAX);
+  const r = layoutRect();
+  const dx = sx - r.cx, dy = sy - r.cy;
+  const before = worldPerPx(view.zoom), after = worldPerPx(z);
+  view.panX += dx * (before - after);
+  view.panY -= dy * (before - after);
+  view.zoom = z;
+  clampPan();
+  updateZoomUI();
+}
+function panBy(dx, dy) {
+  const w = worldPerPx(view.zoom);
+  view.panX -= dx * w;
+  view.panY += dy * w;
+  clampPan();
+}
+function resetZoom() { view.zoom = 1; view.panX = 0; view.panY = 0; updateZoomUI(); }
+function updateZoomUI() {
+  const out = document.getElementById('zfit');
+  if (out) out.textContent = `${Math.round(view.zoom * 100)}%`;
+  // zoomed-in clay runs under the side panels; give them a backing so they stay readable
+  document.body.classList.toggle('zoomed', view.zoom > 1.12);
+}
 
 function layoutRect() {
   const W = innerWidth, H = innerHeight;
@@ -222,15 +260,16 @@ function placeCamera() {
   const s = mesh.scale.x;
   const ty = ((clay.capY || 0.8) * 0.48) * s + 0.02;
   const d = view.dist;
-  camera.position.set(0, ty + Math.sin(view.el) * d, Math.cos(view.el) * d);
-  camera.lookAt(0, ty, 0);
+  const tx = view.px, tyy = ty + view.py;
+  camera.position.set(tx, tyy + Math.sin(view.el) * d, Math.cos(view.el) * d);
+  camera.lookAt(tx, tyy, 0);
 }
 
 function resize() {
   renderer.setSize(innerWidth, innerHeight, false);
   fitCamera();
 }
-addEventListener('resize', resize);
+addEventListener('resize', () => { resize(); updateNext(); });
 
 // ---------------------------------------------------------------- picking & tools
 
@@ -298,10 +337,27 @@ function stroke(hit) {
   pointer.lastP = hit.p;
 }
 
+// Two fingers (or a trackpad pinch / wheel) zoom; the point under the fingers stays put.
+const touches = new Map();
+let pinch = null;
+const touchSpread = () => { const [a, b] = [...touches.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
+const touchMid = () => { const [a, b] = [...touches.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; };
+
 canvas.addEventListener('pointerdown', (ev) => {
-  if (pointer.id !== null) return;
-  pointer.id = ev.pointerId;
+  touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
   canvas.setPointerCapture(ev.pointerId);
+  if (touches.size === 2) {
+    // a second finger turns whatever the first one started into a pinch
+    if (pointer.mode === 'tool' && undo.length) { clay.field.set(undo.pop()); state.marks = Math.max(0, state.marks - 1); dirty = true; updateLog(); }
+    pointer.mode = 'pinch';
+    pointer.id = null;
+    pointer.lastP = null;
+    canvas.classList.remove('grabbing');
+    pinch = { d: touchSpread(), mid: touchMid() };
+    return;
+  }
+  if (touches.size > 2 || pointer.id !== null) return;
+  pointer.id = ev.pointerId;
   pointer.x = ev.clientX;
   const hit = state.stage === 1 && !state.anim ? pick(ev) : null;
   if (hit) {
@@ -320,6 +376,15 @@ canvas.addEventListener('pointerdown', (ev) => {
 });
 
 canvas.addEventListener('pointermove', (ev) => {
+  if (touches.has(ev.pointerId)) touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+  if (pointer.mode === 'pinch') {
+    if (touches.size < 2 || !pinch) return;
+    const d = touchSpread(), mid = touchMid();
+    zoomAt(view.zoom * (d / pinch.d), mid.x, mid.y);
+    panBy(mid.x - pinch.mid.x, mid.y - pinch.mid.y);
+    pinch = { d, mid };
+    return;
+  }
   if (pointer.mode === 'turn' && ev.pointerId === pointer.id) {
     const dx = ev.clientX - pointer.x;
     pointer.x = ev.clientX;
@@ -344,6 +409,12 @@ canvas.addEventListener('pointermove', (ev) => {
 });
 
 function endPointer(ev) {
+  touches.delete(ev.pointerId);
+  if (pointer.mode === 'pinch') {
+    if (touches.size < 2) { pointer.mode = touches.size ? 'pinch-tail' : null; pinch = null; }
+    return;
+  }
+  if (pointer.mode === 'pinch-tail') { if (!touches.size) pointer.mode = null; return; }
   if (ev.pointerId !== pointer.id) return;
   pointer.id = null;
   pointer.mode = null;
@@ -352,6 +423,12 @@ function endPointer(ev) {
 }
 canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('wheel', (ev) => {
+  ev.preventDefault();
+  // trackpad pinches arrive as ctrl+wheel with small deltas
+  const k = ev.ctrlKey ? 0.012 : 0.0016;
+  zoomAt(view.zoom * Math.exp(-ev.deltaY * k), ev.clientX, ev.clientY);
+}, { passive: false });
 canvas.addEventListener('pointerleave', () => { if (pointer.mode !== 'tool') cursor.classList.remove('on'); });
 
 function doUndo() {
@@ -605,7 +682,8 @@ function canAdvance() {
 function updateNext() {
   const n = $('#next');
   n.disabled = !canAdvance();
-  n.firstChild.textContent = `${NEXT_LABEL[state.stage]} `;
+  // phones show the step name in the rail, so the button only needs to say what it does next
+  n.firstChild.textContent = `${narrow() ? (state.stage === 5 ? 'New piece' : 'Next') : NEXT_LABEL[state.stage]} `;
 }
 
 function updateRail() {
@@ -706,6 +784,13 @@ $('#next').addEventListener('click', () => {
 $$('#steps button').forEach((b) => b.addEventListener('click', () => goTo(+b.dataset.step)));
 $('#again').addEventListener('click', newPiece);
 $('#save').addEventListener('click', saveImage);
+$('#zin').addEventListener('click', () => { const r = layoutRect(); zoomAt(view.zoom * 1.3, r.cx, r.cy); });
+$('#zout').addEventListener('click', () => { const r = layoutRect(); zoomAt(view.zoom / 1.3, r.cx, r.cy); });
+$('#zfit').addEventListener('click', resetZoom);
+// keep the zoom controls clear of the sheet that holds the controls on phones
+new ResizeObserver(() => {
+  document.documentElement.style.setProperty('--sheet', `${narrow() ? $('#panel').offsetHeight : 0}px`);
+}).observe($('#panel'));
 $('#save2').addEventListener('click', saveImage);
 
 const wordInput = $('#word');
@@ -721,6 +806,11 @@ wordInput.addEventListener('keydown', (e) => {
 addEventListener('keydown', (e) => {
   if (e.target === wordInput) return;
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); doUndo(); return; }
+  if (e.target instanceof HTMLInputElement) return;
+  const mid = layoutRect();
+  if (e.key === '+' || e.key === '=') { zoomAt(view.zoom * 1.25, mid.cx, mid.cy); return; }
+  if (e.key === '-' || e.key === '_') { zoomAt(view.zoom / 1.25, mid.cx, mid.cy); return; }
+  if (e.key === '0') { resetZoom(); return; }
   if (state.stage === 1) {
     const t = Object.entries(TOOLS).find(([, v]) => v.key === e.key);
     if (t) selectRadio($('#tools'), t[0]);
@@ -741,6 +831,7 @@ function newPiece() {
   state.bisqued = state.dipped = state.fired = false;
   undo.length = 0;
   view.rotTarget = -0.24 + (Math.random() - 0.5) * 0.3;
+  resetZoom();
   goTo(0);
   state.stage = 0;
   document.body.dataset.stage = '0';
@@ -799,7 +890,10 @@ function frame() {
   }
   view.rot = lerp(view.rot, view.rotTarget, 1 - Math.exp(-dt * (reduceMotion ? 60 : 7)));
   wheel.rotation.y = view.rot;
-  view.dist = lerp(view.dist, view.distTarget, 1 - Math.exp(-dt * 4));
+  const zk = 1 - Math.exp(-dt * (reduceMotion ? 60 : 10));
+  view.dist = lerp(view.dist, view.distTarget / view.zoom, zk);
+  view.px = lerp(view.px, view.panX, zk);
+  view.py = lerp(view.py, view.panY, zk);
 
   applyLook();
   mesh.position.y = -groundY() * mesh.scale.x;
