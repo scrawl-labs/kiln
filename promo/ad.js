@@ -286,7 +286,7 @@ function textLayer(t) {
     return `<div class="end">
       <div class="mark" style="opacity:${o(0.35)};transform:translateY(${(1 - k(0.35)) * 80}px)">KILN</div>
       <div class="tag" style="opacity:${o(0.55)};transform:translateY(${(1 - k(0.55)) * 60}px)">Type a word. Fire it.</div>
-      <div class="cta" style="opacity:${o(0.8)}">Clay type studio · link in bio</div></div>`;
+      <div class="cta" style="opacity:${o(0.8)}">Clay typo studio · link in bio</div></div>`;
   }
   return '';
 }

@@ -1,4 +1,4 @@
-# KILN — clay type studio
+# KILN — clay typo studio
 
 Type a word and it is built out of clay. Work it with your hands, let it dry,
 fire it, dip it in glaze and fire it again.
